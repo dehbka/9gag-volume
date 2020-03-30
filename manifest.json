@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "9gag Volume change",
+  "version": "0.1",
+  "description": "This plugin adds volume control to video files on 9gag.",
+  "author": "dehbkaa@gmail.com",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://9gag.com/*"
+      ],
+      "js": ["main.js"],
+      "css": ["main.css"]
+    }
+  ]
+}
