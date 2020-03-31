@@ -1,8 +1,16 @@
 var className = 'gag-volume',
 	range = createRange(className),
-	config = { childList: true, subtree: true };
+	config = { childList: true, subtree: true },
+	videos = document.querySelectorAll('.video-post');
 
 initSetVolume();
+
+setTimeout(function () {
+	videos.forEach(function (video) {
+		var parent = video.parentNode.parentNode.parentNode;
+		insertRange(parent, range.cloneNode());
+	});
+}, 50);
 
 var observer = new MutationObserver(function (list) {
 	list.forEach(function (item) {
@@ -29,20 +37,20 @@ function createRange(className) {
 }
 
 function insertRange(parent, range) {
-	if (parent.parentNode.querySelector('.gag-volume') === null) {
+	if (parent.parentNode.querySelector('.' + className) === null) {
 		var toInsert = range.cloneNode(),
 			soundButton = parent.querySelector('.sound-toggle'),
 			parentCoords = parent.getBoundingClientRect(),
 			soundCoords = soundButton.getBoundingClientRect();
 
 		toInsert.setAttribute('value', getVolumeFromAttr());
-		toInsert.style.top = soundCoords.top - parentCoords.top - parentCoords.height + 5 + 'px';
+		toInsert.style.top = soundCoords.top - parentCoords.top - parentCoords.height + 'px';
 		toInsert.style.left = soundCoords.left - parentCoords.left + soundCoords.width + 10 + 'px';
 
 		parent.parentNode.insertBefore(toInsert, parent.nextSibling);
 		changeVolume(getVolumeFromAttr());
 
-		parent.parentNode.querySelector('.gag-volume')
+		parent.parentNode.querySelector('.' + className)
 			.addEventListener('change', function() {
 				changeVolume(this.value);
 				rangeChangeValue(className, this.value);
@@ -51,7 +59,17 @@ function insertRange(parent, range) {
 		});
 
 		soundButton.addEventListener('mouseover', function () {
-			parent.parentNode.querySelector('.gag-volume').style.display = 'block';
+			var range = parent.parentNode.querySelector('.' + className);
+			if (parent.parentNode.parentNode.nodeName !== 'SECTION' && !range.getAttribute('flag')) {
+				range.style.top = parseInt(range.style.top) + 6 + 'px';
+				range.setAttribute('flag', '1');
+			}
+			range.style.display = 'block';
+		});
+
+		parent.parentNode.querySelector('.' + className).addEventListener('mouseout', function () {
+			var range = parent.parentNode.querySelector('.' + className);
+			range.style.display = 'none';
 		})
 	}
 }
