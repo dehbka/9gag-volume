@@ -6,10 +6,7 @@ var className = 'gag-volume',
 initSetVolume();
 
 setTimeout(function () {
-	videos.forEach(function (video) {
-		var parent = video.parentNode.parentNode.parentNode;
-		insertRange(parent, range.cloneNode());
-	});
+	setRangeForEveryVideo();
 }, 50);
 
 var observer = new MutationObserver(function (list) {
@@ -23,7 +20,7 @@ var observer = new MutationObserver(function (list) {
 	})
 });
 
-observer.observe(document.querySelector('.main-wrap'), config);
+observer.observe(document.querySelector('#container'), config);
 
 function createRange(className) {
 	var range = document.createElement('input');
@@ -106,10 +103,17 @@ function initSetVolume() {
 	});
 }
 
+function setRangeForEveryVideo() {
+	videos.forEach(function (video) {
+		var parent = video.parentNode.parentNode.parentNode;
+		insertRange(parent, range.cloneNode());
+	});
+}
+
 function setVolumeAttr(value) {
-	document.querySelector('.main-wrap').setAttribute(className, value);
+	document.querySelector('#container').setAttribute(className, value);
 }
 
 function getVolumeFromAttr() {
-	return document.querySelector('.main-wrap').getAttribute(className);
+	return document.querySelector('#container').getAttribute(className);
 }
