@@ -37,14 +37,16 @@ function insertRange(parent, range) {
 	if (parent.parentNode.querySelector('.' + className) === null) {
 		var toInsert = range.cloneNode(),
 			soundButton = parent.querySelector('.sound-toggle'),
-			parentCoords = parent.getBoundingClientRect(),
-			soundCoords = soundButton.getBoundingClientRect();
+			parentCoords = parent.querySelector('a').getBoundingClientRect(),
+			soundCoords = soundButton.getBoundingClientRect(),
+			rangeWidth = 100;
 
 		toInsert.setAttribute('value', getVolumeFromAttr());
-		toInsert.style.top = soundCoords.top - parentCoords.top - parentCoords.height + 'px';
-		toInsert.style.left = soundCoords.left - parentCoords.left + soundCoords.width + 10 + 'px';
 
-		parent.parentNode.insertBefore(toInsert, parent.nextSibling);
+		toInsert.style.top = soundCoords.bottom - (soundCoords.height / 1.8) - parentCoords.bottom - rangeWidth + 'px';
+		toInsert.style.left = soundCoords.left - parentCoords.left - soundCoords.width - 10 + 'px';
+
+		parent.querySelector('a').parentNode.appendChild(toInsert);
 		changeVolume(getVolumeFromAttr());
 
 		parent.parentNode.querySelector('.' + className)
