@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "9gag Volume control",
+  "name": "9gag Volume & Sound control",
   "version": "0.4",
-  "description": "This plugin adds volume control to video files on 9gag.",
+  "description": "This plugin adds volume and time control to video files on 9gag.",
   "author": "dehbkaa@gmail.com",
   "icons": {
     "16": "/icons/16.png",

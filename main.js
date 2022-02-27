@@ -1,4 +1,5 @@
 var className = 'gag-volume',
+	timeClassName = 'gag-time',
 	range = createRange(className),
 	config = { childList: true, subtree: true },
 	videos = document.querySelectorAll('.video-post');
@@ -16,6 +17,7 @@ var observer = new MutationObserver(function (list) {
 		if (className.length !== 0 && className.indexOf('video-post') >= 0) {
 			var parent = item.target.parentNode.parentNode.parentNode;
 			insertRange(parent, range);
+			insertTimeRange(parent);
 		}
 	})
 });
@@ -33,8 +35,36 @@ function createRange(className) {
 	return range;
 }
 
+function createTimeRange(duration) {
+	var range = document.createElement('input');
+	range.setAttribute('class', timeClassName);
+	range.setAttribute('type', 'range');
+	range.setAttribute('min', 0);
+	range.setAttribute('max', Math.round(duration));
+	range.setAttribute('value', 0);
+
+	return range;
+}
+
+function createDurationTime(now, end) {
+	var p = document.createElement('p');
+
+	p.setAttribute('class', 'length');
+	p.innerText = formatFullTime(now, end);
+
+	return p;
+}
+
+function formatFullTime(now, end) {
+	return formatTime(Math.floor(now)) + ' / ' + formatTime(Math.floor(end));
+}
+
+function formatTime(time) {
+	return false === isNaN(time) ? (time - (time %= 60)) / 60+(9 < time ?':':':0') + time : ''
+}
+
 function insertRange(parent, range) {
-	if (parent.parentNode.querySelector('.' + className) === null) {
+	if (null === parent.parentNode.querySelector('.' + className)) {
 		var toInsert = range.cloneNode(),
 			soundButton = parent.querySelector('.sound-toggle'),
 			parentCoords = parent.querySelector('a').getBoundingClientRect(),
@@ -70,6 +100,50 @@ function insertRange(parent, range) {
 			var range = parent.parentNode.querySelector('.' + className);
 			range.style.display = 'none';
 		})
+	}
+}
+
+function insertTimeRange(parent) {
+	if (null === parent.parentNode.querySelector('.' + timeClassName)) {
+		var video = parent.querySelector('video');
+
+		if (null !== video) {
+			var range = createTimeRange(video.duration),
+				length = parent.querySelector('.length');
+
+			parent.querySelector('a').parentNode.appendChild(range);
+
+			if (null !== length) {
+				length.remove();
+			}
+			parent.querySelector('.video-post').appendChild(
+				createDurationTime(this.value, video.duration)
+			);
+
+			parent.querySelector('video')
+				.addEventListener('timeupdate', function () {
+					this.parentNode.querySelector('.length').innerText = formatFullTime(
+						this.currentTime,
+						this.duration
+					);
+
+					var timeRange = this.parentNode.parentNode.parentNode.querySelector('.' + timeClassName);
+					if (null !== timeRange) {
+						timeRange.value = this.currentTime;
+					}
+				});
+
+			parent.parentNode.querySelector('.' + timeClassName)
+				.addEventListener('change', function() {
+					var video = this.parentNode.querySelector('video');
+					video.currentTime = this.value;
+					video.play();
+				});
+			parent.parentNode.querySelector('.' + timeClassName)
+				.addEventListener('input', function() {
+					this.parentNode.querySelector('video').pause();
+				});
+		}
 	}
 }
 
@@ -109,6 +183,7 @@ function setRangeForEveryVideo() {
 	videos.forEach(function (video) {
 		var parent = video.parentNode.parentNode.parentNode;
 		insertRange(parent, range.cloneNode());
+		insertTimeRange(parent);
 	});
 }
 
